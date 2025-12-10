@@ -20,7 +20,7 @@ rm -rf singularity-ce_4.3.5-noble_amd64.deb
 Singularity 使用 *.sif 文件作为镜像。要构建它，例如，运行以下命令：
 
 ```
-cd RfDiffusion
+cd LigandMPNN
 sudo singularity build ligandmpnn.sif ligandmpnn.def
 ```
 
