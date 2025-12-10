@@ -42,7 +42,7 @@ singularity run \
   ligandmpnn.sif \
   python3 /app/LigandMPNN/run.py \
   --seed 111 \
-  --verbose 0 \
+  --verbose 1 \
   --pdb_path "/app/LigandMPNN/inputs/1BC8.pdb" \
   --out_folder "/outputs/verbose"
 ```
