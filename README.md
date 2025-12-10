@@ -23,7 +23,7 @@ Clone this repo and cd to the project file you need.
 singularity use *.sif file as image. To build it, for example, run the following:
 
 ```
-cd RfDiffusion
+cd LigandMPNN
 sudo singularity build ligandmpnn.sif ligandmpnn.def
 ```
 
