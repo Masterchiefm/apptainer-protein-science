@@ -48,6 +48,12 @@ From: nvidia/cuda:12.2.2-cudnn8-devel-ubuntu22.04
     # 运行 foundry install
     foundry install rfd3 ligandmpnn rf3 --checkpoint-dir /checkpoints
 
+    # 清理缓存以减小镜像大小
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+    pip3 cache purge
+    rm -rf /root/.cache/pip
+
 %environment
     export FOUNDRY_CHECKPOINT_DIRS=/checkpoints
     export LC_ALL=C
