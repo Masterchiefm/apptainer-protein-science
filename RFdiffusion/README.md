@@ -5,5 +5,5 @@ For RF3, please see [here]()
 
 # build
 ```
-sudo singularity build rfdiffusion.sif rfdiffusion.def
+sudo singularity build rfdiffusion.sif RFdiffusion.def
 ```
