@@ -28,6 +28,9 @@ singularity run --nv -B workdir/:/foundry/workdir foundry.sif jupyter lab --app-
 ```
 copy the auth key in the console,then you can open jupyter in your web browser and login.
 
+After opening jupyter, you can find a example folder in the left pannel. There are some example notebooks.
+
+Or you can open new terminal in jupyter and run your own script. Please note that all changes will **NOT** be saved, except changes in workdir you had bind.
 
 2. Or you can run your script
 ```
