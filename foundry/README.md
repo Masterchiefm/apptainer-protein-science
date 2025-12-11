@@ -7,7 +7,14 @@ Foundry 为使用和训练各类蛋白质设计模型提供了工具和服务，
 --------
 
 # How to build
-download the *.def file then run the following:
+1. Install singularity first.
+```
+wget https://github.com/sylabs/singularity/releases/download/v4.3.5/singularity-ce_4.3.5-noble_amd64.deb
+sudo apt install singularity-ce_4.3.5-noble_amd64.deb
+rm -rf singularity-ce_4.3.5-noble_amd64.deb
+```
+
+2. download the *.def file then run the following:
 ```
 sudo singularity build foundry.sif foundry.def
 ```
@@ -22,7 +29,7 @@ singularity run --nv -B workdir/:/foundry/workdir foundry.sif jupyter lab --app-
 copy the auth key in the console,then you can open jupyter in your web browser and login.
 
 
-2. Run your script
+2. Or you can run your script
 ```
-singularity run --nv -B workdir/:/workdir foundry.sif bash [your_script]
+singularity run --nv -B workdir/:/workdir  foundry.sif bash /workdir/your_script
 ```
