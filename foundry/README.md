@@ -36,3 +36,9 @@ Or you can open new terminal in jupyter and run your own script. Please note tha
 ```
 singularity run --nv -B workdir/:/workdir  foundry.sif bash /workdir/your_script
 ```
+
+# Design
+For RFd3 binder design, please read the tutorial in model/rfd3. It can be found in the jupyter left panel.
+Or you can read [here, De novo Design of Biomolecular Interactions with RFdiffusion3](https://github.com/RosettaCommons/foundry/tree/production/models/rfd3)
+
+All commands can be run in foundry image.
