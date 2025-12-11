@@ -2,7 +2,7 @@ Foundry provides tooling and infrastructure for using and training all classes o
 
 Foundry 为使用和训练各类蛋白质设计模型提供了工具和服务，包括设计模型（RFD3）、逆折叠模型（ProteinMPNN）以及蛋白质折叠模型（RF3）
 
-[Foundry](https://github.com/RosettaCommons/foundry/)
+For more info please read [Foundry](https://github.com/RosettaCommons/foundry/)
 
 --------
 
