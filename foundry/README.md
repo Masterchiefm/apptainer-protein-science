@@ -42,3 +42,19 @@ For RFd3 binder design, please read the tutorial in model/rfd3. It can be found 
 Or you can read [here, De novo Design of Biomolecular Interactions with RFdiffusion3](https://github.com/RosettaCommons/foundry/tree/production/models/rfd3)
 
 All commands can be run in foundry image.
+
+# Test
+
+## RFdiffusion3
+```
+mkdir rfd3_output
+singularity run --nv \
+  -B rfd3_output:/rfd3_output \
+  foundry.sif \
+  rfd3 design \
+  out_dir=/rfd3_output \
+  inputs=/foundry/models/rfd3/docs/demo.json \
+  skip_existing=False \
+  dump_trajectories=True \
+  prevalidate_inputs=True
+```
