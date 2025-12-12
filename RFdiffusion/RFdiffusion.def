@@ -1,140 +1,150 @@
 Bootstrap: docker
 From: nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
 
-%labels
-    Author YourName
-    Version 1.0
-    Description RFdiffusion (not RFdiffusion2) container with PyTorch 1.9 and CUDA 11.1
-
-%environment
-    export LC_ALL=C
-    export PATH=/usr/local/bin:$PATH
-    export PYTHONPATH=/app/RFdiffusion:$PYTHONPATH
-
 %post
-    # 设置非交互环境以避免tzdata等包的交互式配置
+    # 设置非交互式环境，避免安装过程中需要用户输入
     export DEBIAN_FRONTEND=noninteractive
     export TZ=Etc/UTC
     
-    # 更新包管理器并安装基础工具
+    # 更新系统并安装基本工具
     apt-get update && apt-get install -y --no-install-recommends \
         wget \
+        curl \
         git \
         ca-certificates \
         build-essential \
         software-properties-common \
-        gnupg2 \
-        dialog \
         tzdata \
-        libopenmpi-dev \
-        libssl-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        liblzma-dev \
-        libffi-dev \
-        libncurses5-dev \
-        libreadline-dev \
-        libsqlite3-dev
+        && rm -rf /var/lib/apt/lists/*
     
-    # 添加 deadsnakes PPA 并安装 Python 3.9
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776
-    add-apt-repository ppa:deadsnakes/ppa -y
-    apt-get update && apt-get install -y --no-install-recommends \
-        python3.9 \
-        python3.9-dev \
-        python3.9-distutils \
-        python3.9-venv \
-        python3-pip \
-        python3.9-tk
+    # 设置时区（避免交互式提示）
+    ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
+    dpkg-reconfigure --frontend noninteractive tzdata
     
-    # 设置 Python 3.9 为默认版本
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
+    # 安装 Miniforge
+    MINIFORGE_URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
+    wget -q $MINIFORGE_URL -O /tmp/miniforge.sh
+    bash /tmp/miniforge.sh -b -p /opt/miniforge
+    rm /tmp/miniforge.sh
     
-    # 安装 pip 和相关工具
-    wget https://bootstrap.pypa.io/get-pip.py
-    python3.9 get-pip.py
-    rm get-pip.py
+    # 初始化 conda
+    export PATH="/opt/miniforge/bin:$PATH"
+    conda init bash
     
-    # 升级 pip 和 setuptools
-    pip3 install --upgrade pip setuptools wheel
+    # 配置 conda 清华镜像源
+    cat > /opt/miniforge/.condarc << EOF
+channels:
+  - defaults
+show_channel_urls: true
+default_channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+custom_channels:
+  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+channel_priority: flexible
+EOF
     
-    # 安装 PyTorch 1.9 及相关包 (CUDA 11.1 版本)
-    pip3 install \
-        torch==1.9.0+cu111 \
-        torchvision==0.10.0+cu111 \
-        torchaudio==0.9.0 \
-        -f https://download.pytorch.org/whl/torch_stable.html
+    # 配置 pip 清华镜像源
+    mkdir -p /opt/miniforge/etc/conda/activate.d
+    cat > /opt/miniforge/etc/conda/activate.d/set-pip-mirror.sh << 'EOF'
+#!/bin/bash
+# 设置 pip 清华镜像源
+pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+pip config set install.trusted-host mirrors.tuna.tsinghua.edu.cn
+EOF
     
-    # 安装其他 Python 包（RFdiffusion 可能需要）
-    pip3 install \
-        hydra-core==1.3.2 \
-        pyrsistent \
-        dgl-cu111 \
-        mpi4py \
-        biopython \
-        pandas \
-        numpy \
-        scipy \
-        matplotlib \
-        seaborn \
-        tqdm \
-        requests \
-        pyyaml \
-        json5 \
-        pathlib2
-    
-    # 创建 /app 目录
-    mkdir -p /app
-    cd /app
+    chmod +x /opt/miniforge/etc/conda/activate.d/set-pip-mirror.sh
     
     # 克隆 RFdiffusion 仓库
+    cd /
     git clone https://github.com/RosettaCommons/RFdiffusion.git
     
-    # 安装 RFdiffusion 依赖
-    cd /app/RFdiffusion
-    pip3 install -r requirements.txt
+    # 创建并激活 conda 环境
+    cd /RFdiffusion
+    conda env create -f env/SE3nv.yml
     
-    # 下载模型文件
-    mkdir -p models && cd models
+    # 激活环境并安装依赖
+    . /opt/miniforge/etc/profile.d/conda.sh
+    conda activate SE3nv
     
-    # 下载所有模型文件
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/e29311f6f1bf1af907f9ef9f44b8328b/Complex_base_ckpt.pt
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/60f09a193fb5e5ccdc4980417708dbab/Complex_Fold_base_ckpt.pt
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/74f51cfb8b440f50d70878e05361d8f0/InpaintSeq_ckpt.pt
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/76d00716416567174cdb7ca96e208296/InpaintSeq_Fold_ckpt.pt
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/5532d2e1f3a4738decd58b19d633b3c3/ActiveSite_ckpt.pt
-    wget -q --show-progress http://files.ipd.uw.edu/pub/RFdiffusion/12fc204edeae5b57713c5ad7dcb97d39/Base_epoch8_ckpt.pt
+    # 安装 SE3Transformer
+    cd env/SE3Transformer
+    pip install --no-cache-dir -r requirements.txt
+    python setup.py install
     
-    # 设置模型文件权限
-    chmod 644 /app/RFdiffusion/models/*.pt
+    # 安装 RFdiffusion
+    cd ../..  # 回到仓库根目录
+    pip install -e .
     
-    # 解压示例文件
-    cd /app/RFdiffusion
+    # 创建全局 pip 配置文件（用于非 conda 环境）
+    mkdir -p /etc/pip
+    cat > /etc/pip/pip.conf << EOF
+[global]
+index-url = https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+trusted-host = mirrors.tuna.tsinghua.edu.cn
+timeout = 6000
+EOF
+    
+    # 清理缓存
+    conda clean -afy
+    pip cache purge
+
+    # weights
+    cd /RFdiffusion
+    mkdir models && cd models
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/6f5902ac237024bdd0c176cb93063dc4/Base_ckpt.pt
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/e29311f6f1bf1af907f9ef9f44b8328b/Complex_base_ckpt.pt
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/60f09a193fb5e5ccdc4980417708dbab/Complex_Fold_base_ckpt.pt
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/74f51cfb8b440f50d70878e05361d8f0/InpaintSeq_ckpt.pt
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/76d00716416567174cdb7ca96e208296/InpaintSeq_Fold_ckpt.pt
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/5532d2e1f3a4738decd58b19d633b3c3/ActiveSite_ckpt.pt
+    wget http://files.ipd.uw.edu/pub/RFdiffusion/12fc204edeae5b57713c5ad7dcb97d39/Base_epoch8_ckpt.pt
+
     tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
+
+
+%environment
+    # 设置环境变量
+    export PATH="/opt/miniforge/bin:$PATH"
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+    export TZ=Etc/UTC
     
-    # 清理缓存以减小镜像大小
-    apt-get clean
-    rm -rf /var/lib/apt/lists/*
-    pip3 cache purge
-    rm -rf /root/.cache/pip
+    # 设置 pip 配置文件路径
+    export PIP_CONFIG_FILE=/etc/pip/pip.conf
+    
+    # 自动激活 conda 环境
+    . /opt/miniforge/etc/profile.d/conda.sh
+    conda activate SE3nv
 
+%runscript
+    # 当容器以可执行方式运行时，自动激活环境并执行命令
+    . /opt/miniforge/etc/profile.d/conda.sh
+    conda activate SE3nv
+    exec "$@"
 
+%startscript
+    # 容器启动时执行的脚本
+    . /opt/miniforge/etc/profile.d/conda.sh
+    conda activate SE3nv
+
+%labels
+    Author YourName
+    Version 1.0.0
+    Description RFdiffusion with SE3nv environment (Tsinghua mirrors)
 
 %help
-    This is a Singularity container for RFdiffusion (not RFdiffusion2).
+    This container contains RFdiffusion with the SE3nv conda environment.
+    Both conda and pip are configured to use Tsinghua University mirrors for faster downloads in China.
     
-    The container includes:
-    - Base image: nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
-    - Python 3.9
-    - PyTorch 1.9.0 with CUDA 11.1 support
-    - torchvision 0.10.0 and torchaudio 0.9.0
-    - Additional packages: hydra-core, pyrsistent, dgl-cu111
-    - RFdiffusion cloned to /app/RFdiffusion
-    - All required model files downloaded
+    The environment is automatically activated when you:
+    1. Run the container: singularity run <container> <command>
+    2. Shell into it: singularity shell <container>
+    3. Execute commands: singularity exec <container> <command>
     
-    To use RFdiffusion:
-    singularity exec container.sif python /app/RFdiffusion/scripts/run_inference.py [options]
-    
-    Note: This is RFdiffusion, not RFdiffusion2.
+    Example usage:
+        singularity run rfdiffusion.sif python script.py
+        singularity shell rfdiffusion.sif
+        singularity exec rfdiffusion.sif python -c "import rfdiffusion"
