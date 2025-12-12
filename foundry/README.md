@@ -25,7 +25,14 @@ After build the sif, run it with singularity or apptainer:
 
 1. Run in Jupyter:
 ```
-singularity run --nv -B workdir/:/foundry/workdir foundry.sif jupyter lab --app-dir=/foundry --allow-root
+singularity run \
+  --nv \
+  -B workdir/:/foundry/workdir \
+  foundry.sif \
+  jupyter lab  \
+  --allow-root \
+  --ip=0.0.0.0 \
+  --notebook-dir=/foundry
 ```
 copy the auth key in the console,then you can open jupyter in your web browser and login.
 
