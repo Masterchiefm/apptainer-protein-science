@@ -18,6 +18,7 @@ rm -rf singularity-ce_4.3.5-noble_amd64.deb
 ```
 sudo singularity build foundry.sif foundry.def
 ```
+This script will download the checkpoints into the image
 
 # How to run
 After build the sif, run it with singularity or apptainer:
