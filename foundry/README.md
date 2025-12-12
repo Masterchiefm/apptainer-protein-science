@@ -27,6 +27,7 @@ After build the sif, run it with singularity or apptainer:
 ```
 singularity run \
   --nv \
+  --containall \
   -B workdir/:/foundry/workdir \
   foundry.sif \
   jupyter lab  \
