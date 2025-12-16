@@ -54,7 +54,7 @@ singularity run \
   -B outputs:/outputs \           # Bind host directory to container
   ligandmpnn.sif \
   python3 /app/LigandMPNN/run.py \
-  --seed 111 \
+  --seed 114514 \
   --verbose 1 \
   --pdb_path "/app/LigandMPNN/inputs/1BC8.pdb" \
   --out_folder "/outputs/verbose"
