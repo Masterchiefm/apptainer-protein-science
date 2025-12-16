@@ -54,7 +54,7 @@ singularity run \
   -B outputs:/outputs \           # 将主机目录挂载到容器
   ligandmpnn.sif \
   python3 /app/LigandMPNN/run.py \
-  --seed 111 \
+  --seed 114514 \
   --verbose 1 \
   --pdb_path "/app/LigandMPNN/inputs/1BC8.pdb" \
   --out_folder "/outputs/verbose"
