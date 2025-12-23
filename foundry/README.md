@@ -40,7 +40,7 @@ copy the auth key in the console,then you can open jupyter in your web browser a
 
 After opening jupyter, you can find a example folder in the left pannel. There are some example notebooks.
 
-Or you can open new terminal in jupyter and run your own script. Please note that all changes will **NOT** be saved, except changes in workdir you had bind.
+Or you can open new terminal in jupyter and run your own script. Please note that all changes will **NOT** be saved, please save your work to workdir.
 
 2. Or you can run your script
 ```
