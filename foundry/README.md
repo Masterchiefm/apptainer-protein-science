@@ -25,6 +25,7 @@ After build the sif, run it with singularity or apptainer:
 
 1. Run in Jupyter:
 ```
+mkdir -p workdir
 singularity run \
   --nv \
   --containall \
