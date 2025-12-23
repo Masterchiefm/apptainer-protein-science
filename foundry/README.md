@@ -23,7 +23,7 @@ This script will download the checkpoints into the image
 # How to run
 After build the sif, run it with singularity or apptainer:
 
-1. Run in Jupyter:
+1. Run in Jupyter (**Recommed**):
 ```
 mkdir -p workdir
 singularity run \
