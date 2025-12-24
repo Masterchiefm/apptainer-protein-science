@@ -1,62 +1,88 @@
-Foundry provides tooling and infrastructure for using and training all classes of models for protein design, including design (RFD3), inverse folding (ProteinMPNN) and protein folding (RF3).  
-Foundry 为使用和训练各类蛋白质设计模型提供了工具和服务，包括设计模型（RFD3）、逆折叠模型（ProteinMPNN）以及蛋白质折叠模型（RF3）。
+# Foundry
 
-For more info please read [Foundry](https://github.com/RosettaCommons/foundry/)  
-更多信息请阅读 [Foundry](https://github.com/RosettaCommons/foundry/)
+Foundry 为蛋白质设计的全流程提供了完整的工具链与基础设施，支持多种核心模型的训练与应用，涵盖**蛋白质设计（RFD3）**、**逆折叠（ProteinMPNN）** 与**蛋白质折叠（RF3）** 等关键任务。  
+Foundry provides comprehensive tooling and infrastructure for the entire protein design workflow, supporting training and application of core models including **design (RFD3)**, **inverse folding (ProteinMPNN)**, and **protein folding (RF3)**.
 
---------
+了解更多信息，请访问项目主页，此处仅为我自己创建的singularity def文件：  
+For more information, please visit the project homepage. This Repo is created for record my def file:  
+**[Foundry](https://github.com/RosettaCommons/foundry/)**
 
-# How to build / 如何构建
-1. Install singularity first. / 首先安装 Singularity。
-```
+---
+
+## 🛠️ 构建指南 / How to Build
+
+### 1. 安装 Singularity / Install Singularity
+```bash
 wget https://github.com/sylabs/singularity/releases/download/v4.3.5/singularity-ce_4.3.5-noble_amd64.deb
 sudo apt install singularity-ce_4.3.5-noble_amd64.deb
 rm -rf singularity-ce_4.3.5-noble_amd64.deb
 ```
 
-2. download the *.def file then run the following: / 下载 *.def 文件，然后运行以下命令：
-```
+### 2. 构建镜像 / Build the Image
+下载 `foundry.def` 文件后，执行以下命令：  
+After downloading the `foundry.def` file, run:
+```bash
 sudo singularity build foundry.sif foundry.def
 ```
-This script will download the checkpoints into the image / 此脚本会将检查点下载到镜像中。
+> 该脚本会自动将模型检查点下载至镜像内。  
+> This script will automatically download model checkpoints into the image.
 
-# How to run / 如何运行
-After build the sif, run it with singularity or apptainer: / 构建 sif 文件后，使用 Singularity 或 Apptainer 运行它：
+---
 
-1. Run in Jupyter (**Recommed**): / 在 Jupyter 中运行（推荐）：
-```
+## 🚀 运行方式 / How to Run
+
+构建完成后，可通过 Singularity 或 Apptainer 运行镜像。
+
+### 1. 在 Jupyter Lab 中运行（推荐） / Run in Jupyter Lab (Recommended)
+```bash
 mkdir -p workdir
 singularity run \
   --nv \
   --containall \
   -B workdir/:/foundry/workdir \
   foundry.sif \
-  jupyter lab  \
+  jupyter lab \
   --allow-root \
   --ip=0.0.0.0 \
   --notebook-dir=/foundry
 ```
-copy the URL and auth key in the console,then you can open jupyter in your web browser and login. / 复制控制台中的网址与认证密钥，然后即可在网页浏览器中打开 Jupyter 并登录。
+运行后，控制台将输出访问 URL 及认证密钥。复制并粘贴至浏览器即可登录 Jupyter Lab。  
+After running, copy the URL and authentication key from the console to access Jupyter Lab in your browser.
 
-After opening jupyter, you can find a example folder in the left pannel. There are some example notebooks. You can learn alot from all.ipynb/ 打开 Jupyter 后，你可以在左侧面板找到一个示例文件夹，其中包含一些示例笔记本。从all.ipynb中学习你所需要的内容。
+**使用提示 / Tips:**
+- 左侧文件浏览器中可找到 `example` 文件夹，内含多个示例 Notebook（如 `all.ipynb`），供快速上手。  
+  An `example` folder is available in the file browser, containing sample notebooks (e.g., `all.ipynb`) for getting started.
+- 可在 Jupyter 中新建终端运行自定义脚本。  
+  You can open a new terminal in Jupyter to run your own scripts.
+- **请注意：容器内的修改不会被持久保存，请务必将工作文件保存至 `workdir` 目录。**  
+  **Note: Changes inside the container are not persisted. Please save your work to the `workdir` directory.**
 
-Or you can open new terminal in jupyter and run your own script. Please note that all changes will **NOT** be saved, please save your work to workdir. / 或者，你可以在 Jupyter 中打开新终端并运行自己的脚本。请注意，所有更改将**不会**被保存，请将你的工作保存到 workdir 目录。
-
-2. Or you can run your script / 或者，你可以运行自己的脚本：
+### 2. 直接运行脚本 / Run Scripts Directly
+```bash
+singularity run --nv -B workdir/:/workdir foundry.sif bash /workdir/your_script
 ```
-singularity run --nv -B workdir/:/workdir  foundry.sif bash /workdir/your_script
-```
 
-# Design / 设计
-For RFd3 binder design, please read the tutorial in model/rfd3. It can be found in the jupyter left panel. / 关于 RFd3 结合剂设计，请阅读 model/rfd3 中的教程。可以在 Jupyter 左侧面板中找到它。
-Or you can read [here, De novo Design of Biomolecular Interactions with RFdiffusion3](https://github.com/RosettaCommons/foundry/tree/production/models/rfd3) / 或者你可以阅读[此处，使用 RFdiffusion3 进行生物分子相互作用的从头设计](https://github.com/RosettaCommons/foundry/tree/production/models/rfd3)
+---
 
-All commands can be run in foundry image. / 所有命令都可以在 Foundry 镜像中运行。
+## 🧬 蛋白质设计 / Protein Design
 
-# Test / 测试
+### RFdiffusion3（RFD3）结合剂设计
+详细教程位于 Jupyter Lab 左侧面板的 `models/rfd3` 目录中。  
+A detailed tutorial is available in the `models/rfd3` directory within Jupyter Lab.
 
-## RFdiffusion3
-```
+也可在线查阅文档：  
+You can also read the documentation online:  
+**[De novo Design of Biomolecular Interactions with RFdiffusion3](https://github.com/RosettaCommons/foundry/tree/production/models/rfd3)**
+
+> 所有设计相关命令均可在 Foundry 镜像中直接执行。  
+> All design commands can be run directly within the Foundry image.
+
+---
+
+## ✅ 测试示例 / Test Examples
+
+### RFdiffusion3 测试运行
+```bash
 mkdir rfd3_output
 singularity run --nv \
   -B rfd3_output:/rfd3_output \
@@ -68,3 +94,29 @@ singularity run --nv \
   dump_trajectories=True \
   prevalidate_inputs=True
 ```
+
+---
+
+## 📁 目录说明 / Directory Structure
+```
+workdir/          # 用户工作目录，用于保存持久化文件
+rfd3_output/      # RFdiffusion3 输出目录
+foundry.sif       # 构建的 Singularity 镜像
+```
+
+---
+
+## 🔗 相关资源 / Resources
+- [Foundry GitHub](https://github.com/RosettaCommons/foundry/)
+- [RFdiffusion3 文档](https://github.com/RosettaCommons/foundry/tree/production/models/rfd3)
+- [Singularity 安装指南](https://docs.sylabs.io/guides/latest/user-guide/installation.html)
+
+---
+
+## 📄 许可证 / License
+本项目基于 RosettaCommons 开源协议。  
+This project is licensed under the RosettaCommons open-source license.
+
+---
+*如有问题或建议，欢迎在 GitHub 提交 Issue 或参与讨论。  
+For questions or suggestions, please submit an Issue or join the discussion on GitHub.*
