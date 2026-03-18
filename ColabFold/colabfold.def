@@ -1,0 +1,41 @@
+Bootstrap: docker
+From: ghcr.io/sokrypton/colabfold:1.6.1-cuda12
+
+%post
+    # 设置环境变量
+    export DEBIAN_FRONTEND=noninteractive
+    export PIP_NO_CACHE_DIR=1
+    export PYTHONDONTWRITEBYTECODE=1
+    export PYTHONUNBUFFERED=1
+    export TZ=Etc/UTC
+
+    # 创建缓存目录
+    mkdir -p /cache
+
+    # 下载ColabFold权重
+    python -m colabfold.download
+
+
+%environment
+    export PATH=/usr/local/bin:$PATH
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export TZ=Etc/UTC
+
+%labels
+    Author Mo Qiqin
+    Version 1.0.0
+    Description "Singularity container for ColabFold with CUDA 12 and pre-downloaded weights"
+
+%help
+    这是一个用于运行 ColabFold 的 Singularity 容器。
+    基于 ghcr.io/sokrypton/colabfold:1.6.0-cuda12 镜像构建。
+    包含：
+    - CUDA 12
+    - ColabFold 及其依赖
+    - 预下载的模型权重
+
+    使用方法：
+    1. 构建镜像：singularity build --fakeroot colabfold.sif colabfold.def
+    2. 运行容器：singularity run --nv colabfold.sif
+    3. 进入交互模式：singularity shell colabfold.sif

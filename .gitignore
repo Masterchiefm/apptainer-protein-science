@@ -1,0 +1,30 @@
+# Container images
+*.sif
+
+# Build logs and outputs
+*.log
+build_logs/
+outputs/
+output/
+input/
+inputs/
+
+# Cache directories
+cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

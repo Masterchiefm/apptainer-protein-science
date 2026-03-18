@@ -2,20 +2,27 @@ BootStrap: docker
 From: nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
 %post
+  # 设置环境变量避免交互输入
+  export DEBIAN_FRONTEND=noninteractive
+  export TZ=Etc/UTC
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
+  echo $TZ > /etc/timezone
+
   # Fix WARNING related to localtime
   touch /etc/localtime
 
   # Install required packages (verbose list)
-  apt update && apt upgrade -y
-  apt install -y \
+  apt-get update && apt-get upgrade -y --no-install-recommends
+  apt-get install -y --no-install-recommends \
     build-essential libgfortran5 libquadmath0 cmake git curl wget aria2 zip unzip
   
   # Add the en_US.UTF-8 locale (not needed if running only on WSL2)
-  apt install -y locales
+  apt-get install -y --no-install-recommends locales
   locale-gen en_US.UTF-8
+  dpkg-reconfigure -f noninteractive locales
   
   # Clean up apt caches and unused packages
-  rm -rf /var/lib/apt/lists/* && apt autoremove -y && apt clean
+  rm -rf /var/lib/apt/lists/* && apt-get autoremove -y && apt-get clean
 
   # Install Pyenv in /usr/local/apps
   git clone https://github.com/pyenv/pyenv.git /usr/local/apps/pyenv
@@ -31,11 +38,11 @@ From: nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
   export PATH="${MINIFORGE3_ROOT}/bin:${PATH}"
   
   # Update conda itself
-  conda update -n base conda
+  conda update -n base conda -y
   # Create conda environment named bindcraft-conda
-  conda create -n bindcraft-conda python=3.10
+  conda create -n bindcraft-conda python=3.10 -y
   # Install libraries required for BindCraft
-  conda install \
+  conda install -y \
     -n bindcraft-conda \
     -c conda-forge --channel https://conda.graylab.jhu.edu \
     pip pandas matplotlib numpy"<2.0.0" biopython scipy pdbfixer seaborn \

@@ -102,7 +102,8 @@ EOF
     wget http://files.ipd.uw.edu/pub/RFdiffusion/5532d2e1f3a4738decd58b19d633b3c3/ActiveSite_ckpt.pt
     wget http://files.ipd.uw.edu/pub/RFdiffusion/12fc204edeae5b57713c5ad7dcb97d39/Base_epoch8_ckpt.pt
 
-    tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
+    # 注释掉缺失的示例文件
+    # tar -xvf examples/ppi_scaffolds_subset.tar.gz -C examples/
 
 
 %environment
